@@ -7,7 +7,7 @@ Find out more about the package in my thesis.
 ## Installation
 In R:
 
-devtools::install_git("https://github.com/DoraDoraExplorer/SynTruth_pkg.git")
+devtools::install_git("https://github.com/DoraDoraExplorer/SynTruth_pkg")
 
 ## Authors
 Dora Schuller, Dr. Rowan Kuiper<sup>1</sup>, Dr. Domenico Bellomo<sup>1</sup>, Dr. Yan-Ting Chen<sup>1</sup>

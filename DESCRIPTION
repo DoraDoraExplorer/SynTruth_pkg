@@ -2,16 +2,15 @@ Package: SynTruthPkg
 Type: Package
 Title: Create synthetic data of gene expression, treatment and survival to test algorithms for predicting treatment response. 
 Version: 0.1.0
-Authors: c(person("Dora", "Schuller", email = "schuller.dora@gmail.com",
+Author: c(person("Dora", "Schuller", email = "schuller.dora@gmail.com",
   role = c("aut")),
   person("Rowan", "Kuiper", email = "r.kuiper@skylinedx.com", role = c("aut", "cre")))
-
-Maintainer: Rowan Kuiper, <r.kuiper@skylinedx.com>
+Maintainer: Dora Schuller
 Description: A framework for creating synthetic datasets of gene expression, treatment and survival. 
      Contains functions to analyze the synthetic data. 
      SynTruth_guide.Rmd walks you through all the functions.
      Find out more about the package in Dora Schuller's thesis. Ask Domenico Bellomo (d.bellomo@skylinedx.com) for the thesis.
-Depends: R (>=4.1.2)
+Depends: R (>= 4.1.2)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
