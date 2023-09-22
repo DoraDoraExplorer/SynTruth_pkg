@@ -1,0 +1,369 @@
+---
+title: "How to use SynTruth"
+author: "Dora Schuller"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    theme: united
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+library(SynTruthPkg)
+library(kableExtra)
+
+```
+
+
+# I. Create a synthetic dataset
+
+Set parameters.
+
+```{r}
+# This is an example parameter list with one marker block.
+
+params <- list(
+  # parameters for marker blocks
+  marker_blocksizes = c(10),
+  mus_NB = c(0), 
+  mu_diffs = c(2),
+  sds_B = c(0.4), 
+  sds_NB = c(0.4), 
+  rhos_B = c(0.8), 
+  rhos_NB = c(0.8), 
+  gene_effects = c("AND"),
+  
+  # parameters for nonmarker blocks 
+  mu_nonmarker = 0,
+  sds_nonmarker = c(0.4),
+  rhos_nonmarker = c(0.8),
+  
+  # parameters for gep
+  n_pts = 1000, 
+  n_genes = 100, 
+  fraction_pts_benefit = 0.5,
+  fraction_tx_1 = 0.5,
+  fraction_censored = 0,
+  noise = list(type = "random", mean = 0, sd = 1),
+  
+  # parameters for survival
+  surv_distribution = "Weibull",
+  surv_d_params = list(shape=1.5),
+  scale_NB0 = 10,
+  HR_B0_NB0 = 0.7,
+  HR_NB1_NB0 = 0.9,
+  HR_B1_NB0 = 0.5)
+
+# This is another example parameter list with two marker blocks.
+
+params <- list(
+  # parameters for marker blocks
+  marker_blocksizes = c(5, 5),
+  mus_NB = c(0, 0), 
+  mu_diffs = c(1, 2),
+  sds_B = c(0.4, 0.4), 
+  sds_NB = c(0.4, 0.4), 
+  rhos_B = c(0.8, 0.8), 
+  rhos_NB = c(0.8, 0.8), 
+  gene_effects = c("AND", "no_pattern"),
+  
+  # parameters for nonmarker blocks 
+  mu_nonmarker = 0,
+  sds_nonmarker = c(0.3, 0.6),
+  rhos_nonmarker = c(0.8, 0.8),
+  
+  # parameters for gep
+  n_pts = 1000, 
+  n_genes = 100, 
+  fraction_pts_benefit = 0.5,
+  fraction_tx_1 = 0.5,
+  fraction_censored = 0,
+  noise = list(type = "random", mean = 0, sd = 1),
+  
+  # parameters for survival
+  surv_distribution = "Weibull",
+  surv_d_params = list(shape=1.5),
+  scale_NB0 = 10,
+  HR_B0_NB0 = 0.7,
+  HR_NB1_NB0 = 0.8,
+  HR_B1_NB0 = 0.5)
+
+
+```
+
+
+## Run SynTruth once and look into the synthetic data.
+
+```{r}
+
+# This function creates synthetic data and calculates the HRs by fitting a Cox model on patient groups.
+
+gep_hrs <- generate_data(params)
+
+gep <- gep_hrs$gep
+hrs <- gep_hrs$hrs
+hrs
+
+# Look into GEP:
+
+lookinto <- gep[c(1:2, 501:502), c(1, 100:dim(gep)[2])]
+lookinto <- gep[c(495:505), c(1:5, 101:dim(gep)[2])]
+is.num <- sapply(lookinto, is.numeric)
+lookinto[is.num] <- sapply(lookinto[is.num], round, 2)
+
+
+lookinto_kable <- kable(lookinto, format='html', 
+                           caption="Part of the synthetic dataset") %>% 
+  kable_styling(bootstrap_options = "striped", 
+                full_width = F, position = "center") 
+
+lookinto_kable
+
+```
+
+
+
+## Get the best GEP from n run
+
+Since the HRs estimated by fitting a Cox-model do not always match the user-defined (input) HRs, run SynTruth n_repeats times to get the best GEP, with estimated HRs close to the input.
+You have to specify a threshold for the difference of input and output HRs. The first gep, for which the output HRs are lower than this threshold is saved. 
+
+```{r}
+
+n_repeats <- 100
+# The get_best_gep function outputs a plot, the best gep and the HRs belonging to the best gep.
+
+gep_n_times <- get_best_gep(params, n_repeats = n_repeats, threshold = 0.03)
+
+# Plot
+gep_n_times_plot <- gep_n_times$p
+gep_n_times_plot
+#save_plot(myfilename = 'cox_pt_group', myplot = cox_pt_group_p, width = 15, height = 10)
+
+```
+
+
+Check the difference between input and estimated HRs
+
+```{r}
+
+# Extract the best gep:
+best_gep <- gep_n_times$best_gep
+best_output_hrs <- gep_n_times$best_output_hs
+best_output_hrs
+
+# Check difference between input and estimated HRs
+diff_io_hrs <- get_diff_io_hrs(input_hrs = c(params$HR_B0_NB0, params$HR_B1_NB0, 
+                                             params$HR_NB1_NB0),
+                               output_hrs = best_output_hrs,
+                               output_format = 'table')
+
+diff_io_hrs_kable <- kable(diff_io_hrs, format='html', 
+                           caption="Input and output HRs ") %>% 
+  kable_styling(bootstrap_options = "striped", 
+                full_width = F, position = "center") 
+
+diff_io_hrs_kable
+
+# Save:
+#save_kable(diff_io_hrs_kable, paste("./plots/", myfilename, ".html", sep = ""))
+
+#write.csv(diff_io_hrs, paste('./plots/', myfilename, ".csv", sep = ""))
+
+```
+
+
+
+# II. Plot results of best dataset
+
+## Set filename and title
+
+```{r}
+
+myfilename = "example"
+mytitle = "Best dataset (example)"
+
+```
+
+## Test for proportional hazards
+
+The plot of scaled Schoenfeld residuals should be a horizontal line. 
+The  hypothesis test identifies whether the gradient differs from zero for each variable.
+
+```{r}
+
+test_ph(best_gep)
+
+```
+
+
+## Get hazard ratio tables
+
+```{r}
+# There are two output formats.
+
+hrs <- get_hr_table(best_gep, output_format = 'per_group', mytitle) 
+hrs
+hrs <- get_hr_table(best_gep, output_format = 'per_benefit', mytitle) 
+hrs
+
+
+# Save:
+#myfilename = "example2"
+#save_hrs(hrs, myfilename)
+
+```
+
+
+Plot hazards
+
+```{r}
+
+plot_hazards(best_gep, shape = params$surv_d_params$shape, mytitle = "Hazards")
+
+```
+
+
+## Plot survival curves
+
+```{r}
+
+survplot <- plot_surv_curve(best_gep, best_output_hrs, mytitle = mytitle)
+survplot
+
+#Save survival curves
+#myfilename = "example2"
+#save_plot(myfilename, myplot = survplot)
+
+```
+
+
+## Check correlation
+
+```{r}
+# Subset the data to check correlation of parts.
+marker_genes <- best_gep[,1:sum(params$marker_blocksizes)]
+nonmarker_genes <- best_gep[,sum(params$marker_blocksizes):params$n_genes]
+whole_gep <- best_gep[,1:params$n_genes]
+
+check_cor(nonmarker_genes, mytitle = mytitle)
+
+```
+
+
+# III. Explore SynTruth results in scenarios
+
+Does SynTruth construct data according to its settings?
+
+## III/0 Make scenarios
+
+```{r}
+# Specify the parameters to be tuned and their values.
+
+scenarios <- list(
+  mu_diffs = c(1, 5),
+  gene_effects = c('AND', 'OR', "no_pattern")
+)
+
+# Specify the rest of the params that stay constant.
+
+params <- list(
+  # parameters for marker blocks
+  marker_blocksizes = c(10),
+  mus_NB = c(0), 
+  mu_diffs = c(2),
+  sds_B = c(0.4), 
+  sds_NB = c(0.4), 
+  rhos_B = c(0.8), 
+  rhos_NB = c(0.8), 
+  gene_effects = c("AND"),
+  
+  # parameters for nonmarker blocks 
+  mu_nonmarker = 0,
+  sds_nonmarker = c(0.4),
+  rhos_nonmarker = c(0.8),
+  
+  # parameters for gep
+  n_pts = 1000, 
+  n_genes = 100, 
+  fraction_pts_benefit = 0.5,
+  fraction_tx_1 = 0.5,
+  fraction_censored = 0,
+  noise = list(type = "random", mean = 0, sd = 0),
+  
+  # parameters for survival
+  surv_distribution = "Weibull",
+  surv_d_params = list(shape=1.5),
+  scale_NB0 = 10,
+  HR_B0_NB0 = 0.8,
+  HR_NB1_NB0 = 0.7,
+  HR_B1_NB0 = 0.5)
+
+# The make_scenarios function outputs:
+# 1. a list of parameters, in which each element has a different value of those params that are tuned. This list is the input to functions that run an analysis in different scenarios.
+# 2. the names of the scenarios that are composed of the values of the params that are tuned.
+
+scenario_params_names <- make_scenarios(scenarios, params)
+scenario_params_list <- scenario_params_names$params_list
+scenario_names <- scenario_params_names$sc_names
+scenario_names
+
+```
+
+## III/A: Gene expression
+
+### III/A/1: PCA
+
+Is there a separation of B and NB patients?
+
+```{r, fig.height=8, fig.width=14}
+
+scores <- do_pca_in_scenarios(scenario_names, 
+                              scenarios = scenario_params_list, 
+                              nrow = 2)
+
+
+#save_plot(myfilename = 'scores', myplot = scores, width = 28, height = 12)
+
+
+```
+
+
+### III/A/2 K-means clustering, silhouette score
+
+```{r, fig.height=4, fig.width=7}
+
+km_sc_plot <- do_km_in_scenarios(scenario_names = scenario_names, 
+                                 scenarios = scenario_params_list, 
+                                 n_repeats = 100,
+                                 nrows = 3)
+km_sc_plot
+#save_plot(myfilename = 'km_sc_plot', myplot = km_sc_plot, width = 14, height = 10)
+
+
+```
+
+## III/B Can patient groups be predicted from gene expression and treatment?
+
+This part assesses how well the four groups can be reconstructed, by feeding all data – except the true group label - into a hypothetical ‘best’ algorithm. I.e., an algorithm that knows which are the marker genes, and the logical relationship between them. This algorithm is based on the Cox-model.
+
+
+
+```{r, fig.height=10, fig.width=15}
+
+cox_pred_hrs <- validate_cox_in_scenarios(scenario_names = scenario_names, 
+                                          scenarios = scenario_params_list, 
+                                          n_repeats = 100)
+
+
+cox_pred_hrs
+
+#save_plot(myfilename = 'cox_pred_hrs', myplot = cox_pred_hrs, width = 23, height = 15)
+  
+
+```
+
