@@ -3,9 +3,9 @@ Type: Package
 Title: Create synthetic data of gene expression, treatment and survival to test algorithms for predicting treatment response. 
 Version: 0.1.0
 Author: c(person("Dora", "Schuller", email = "schuller.dora@gmail.com",
-  role = c("aut")),
-  person("Rowan", "Kuiper", email = "r.kuiper@skylinedx.com", role = c("aut", "cre")))
-Maintainer: Dora Schuller
+  role = c("aut", "cre")),
+  person("Rowan", "Kuiper", email = "r.kuiper@skylinedx.com", role = c("aut")))
+Maintainer: Dora Schuller <schuller.dora@gmail.com>
 Description: A framework for creating synthetic datasets of gene expression, treatment and survival. 
      Contains functions to analyze the synthetic data. 
      SynTruth_guide.Rmd walks you through all the functions.
