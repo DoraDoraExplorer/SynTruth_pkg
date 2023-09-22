@@ -9,7 +9,7 @@
 #'
 #' @import plotly
 #' @import ggfortify
-#' @import factoextra
+#' @import factoExtra
 #' @importFrom gridExtra arrangeGrob grid.arrange
 #'
 #' @examples
