@@ -1,7 +1,7 @@
 generate_gep_surv <- function(gepdata,
                               n_pts,
                               surv_distribution,
-                              surv_d_params,
+                              shape,
                               scale_NB0,
                               HR_B0_NB0,
                               HR_NB1_NB0,
@@ -23,7 +23,7 @@ generate_gep_surv <- function(gepdata,
 
   if (surv_distribution == "Weibull"){
 
-    shape <- surv_d_params$shape
+    #shape <- surv_d_params$shape
 
     scale_B0 <-exp(-log(HR_B0_NB0 )/shape + log(scale_NB0))
     scale_NB1<-exp(-log(HR_NB1_NB0)/shape + log(scale_NB0))
