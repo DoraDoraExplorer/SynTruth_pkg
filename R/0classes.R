@@ -163,13 +163,13 @@ block <- R6::R6Class("block", list(blocktype = NULL,
                                    size = NULL,
                                    mu_NB = NULL,
                                    mu_diff = NULL,
-                                   mu_nonmarker = NULL,
+                                   mu_NM = NULL,
                                    sd_B = NULL,
                                    sd_NB = NULL,
-                                   sd_nonmarker = NULL,
+                                   sd_NM = NULL,
                                    rho_B = NULL,
                                    rho_NB = NULL,
-                                   rho_nonmarker = NULL,
+                                   rho_NM = NULL,
                                    n_pts = NULL,
                                    fraction_pts_benefit = NULL,
                                    gene_effect = NULL),
@@ -183,13 +183,13 @@ block$set("public", "initialize", function(blocktype = NULL,
                                            size = NULL,
                                            mu_NB = NULL,
                                            mu_diff = NULL,
-                                           mu_nonmarker = NULL,
+                                           mu_NM = NULL,
                                            sd_B = NULL,
                                            sd_NB = NULL,
-                                           sd_nonmarker = NULL,
+                                           sd_NM = NULL,
                                            rho_B = NULL,
                                            rho_NB = NULL,
-                                           rho_nonmarker = NULL,
+                                           rho_NM = NULL,
                                            n_pts = NULL,
                                            fraction_pts_benefit = NULL,
                                            gene_effect = NULL){
@@ -233,26 +233,26 @@ block$set("public", "initialize", function(blocktype = NULL,
 
 
     # nonmarker-block specific variables are initialized as NULL:
-    if (missing(mu_nonmarker)) {self$mu_nonmarker <- NULL}
-    else {self$mu_nonmarker <- mu_nonmarker}
+    if (missing(mu_NM)) {self$mu_NM <- NULL}
+    else {self$mu_NM <- mu_NM}
 
-    if (missing(sd_nonmarker)) {self$sd_nonmarker <- NULL}
-    else {self$sd_nonmarker <- sd_nonmarker}
+    if (missing(sd_NM)) {self$sd_NM <- NULL}
+    else {self$sd_NM <- sd_NM}
 
-    if (missing(rho_nonmarker)) {self$rho_nonmarker <- NULL}
-    else {self$rho_nonmarker <- rho_nonmarker}
+    if (missing(rho_NM)) {self$rho_NM <- NULL}
+    else {self$rho_NM <- rho_NM}
   }
 
   else{
     # nonmarker-block specific variables are initialized:
-    if (missing(mu_nonmarker)) {self$mu_nonmarker <- 0}
-    else {self$mu_nonmarker <- private$check$check_numeric(mu_nonmarker)}
+    if (missing(mu_NM)) {self$mu_NM <- 0}
+    else {self$mu_NM <- private$check$check_numeric(mu_NM)}
 
-    if (missing(sd_nonmarker)) {self$sd_nonmarker <- 0.4}
-    else {self$sd_nonmarker <- private$check$check_numeric_pos(sd_nonmarker)}
+    if (missing(sd_NM)) {self$sd_NM <- 0.4}
+    else {self$sd_NM <- private$check$check_numeric_pos(sd_NM)}
 
-    if (missing(rho_nonmarker)) {self$rho_nonmarker <- 0.8}
-    else {self$rho_nonmarker <- private$check$check_numeric_01(rho_nonmarker)}
+    if (missing(rho_NM)) {self$rho_NM <- 0.8}
+    else {self$rho_NM <- private$check$check_numeric_01(rho_NM)}
 
 
     # marker-block specific are initialized as NULL:
@@ -301,8 +301,8 @@ block$set("active", "mu_NB_blockvector", function(value){
 })
 
 
-block$set("active", "mu_nonmarker_blockvector", function(value){
-  return(self$generate_blockvector(self$mu_nonmarker))
+block$set("active", "mu_NM_blockvector", function(value){
+  return(self$generate_blockvector(self$mu_NM))
 })
 
 
@@ -317,8 +317,8 @@ block$set("active", "sd_NB_blockvector", function(value){
 })
 
 
-block$set("active", "sd_nonmarker_blockvector", function(value){
-  return(self$generate_blockvector(self$sd_nonmarker))
+block$set("active", "sd_NM_blockvector", function(value){
+  return(self$generate_blockvector(self$sd_NM))
 })
 
 
@@ -340,7 +340,7 @@ block$set("active", "block_cormat_NB", function(value){
 
 
 block$set("active", "block_cormat_nonmarker", function(value){
-  return(self$generate_block_cormat(self$rho_nonmarker))
+  return(self$generate_block_cormat(self$rho_NM))
 })
 
 
@@ -485,7 +485,7 @@ gepClass$set("active", "overlay_mat_marker", function(value){
 })
 
 
-gepClass$set("active", "mu_nonmarker_vector", function(value){
+gepClass$set("active", "mu_NM_vector", function(value){
   return(self$nonmarker_block_list[[1]])
 })
 
@@ -511,7 +511,7 @@ gepClass$set("active", "gep_NB", function(value){
 
 
 gepClass$set("active", "gep_nonmarker", function(value){
-  return(mvtnorm::rmvnorm(self$n_pts, self$mu_nonmarker_vector, self$covmat_nonmarker))
+  return(mvtnorm::rmvnorm(self$n_pts, self$mu_NM_vector, self$covmat_nonmarker))
 })
 
 
