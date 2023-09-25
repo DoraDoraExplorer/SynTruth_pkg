@@ -1,7 +1,7 @@
 generate_gep_surv <- function(gepdata,
                               n_pts,
                               surv_distribution,
-                              shape,
+                              surv_d_params,
                               scale_NB0,
                               HR_B0_NB0,
                               HR_NB1_NB0,
@@ -23,7 +23,7 @@ generate_gep_surv <- function(gepdata,
 
   if (surv_distribution == "Weibull"){
 
-    #shape <- surv_d_params$shape
+    shape <- surv_d_params$shape
 
     scale_B0 <-exp(-log(HR_B0_NB0 )/shape + log(scale_NB0))
     scale_NB1<-exp(-log(HR_NB1_NB0)/shape + log(scale_NB0))
@@ -85,7 +85,7 @@ generate_marker_blocks <- function(marker_blocksizes,
                               n_pts = n_pts,
                               fraction_pts_benefit = fraction_pts_benefit,
                               gene_effect = gene_effects[i],
-                              mus_NM = NULL,
+                              mu_nonmarker = NULL,
                               sd_nonmarker = NULL,
                               rho_nonmarker = NULL
     )
@@ -129,9 +129,9 @@ generate_marker_blocks <- function(marker_blocksizes,
 }
 
 
-set_nonmarker_blocksizes <- function(n_genes, marker_blocksizes, sds_NM){
+set_nonmarker_blocksizes <- function(n_genes, marker_blocksizes, sds_nonmarker){
   n_nonmarker_genes <- n_genes-sum(marker_blocksizes)
-  n_nonmarker_blocks <- length(sds_NM)
+  n_nonmarker_blocks <- length(sds_nonmarker)
   if (n_nonmarker_genes %% n_nonmarker_blocks == 0){
     return(rep(n_nonmarker_genes/n_nonmarker_blocks, n_nonmarker_blocks))
   }
@@ -149,16 +149,16 @@ set_nonmarker_blocksizes <- function(n_genes, marker_blocksizes, sds_NM){
 
 generate_nonmarker_blocks <- function(n_genes,
                                       marker_blocksizes,
-                                      mus_NM,
-                                      sds_NM,
-                                      rhos_NM,
+                                      mu_nonmarker,
+                                      sds_nonmarker,
+                                      rhos_nonmarker,
                                       n_pts,
                                       fraction_pts_benefit){
 
   # set nonmarker blocksizes
   nonmarker_blocksizes <- set_nonmarker_blocksizes(n_genes,
                                                    marker_blocksizes,
-                                                   sds_NM)
+                                                   sds_nonmarker)
 
   mu_vector = c()
   sd_vector = c()
@@ -170,9 +170,9 @@ generate_nonmarker_blocks <- function(n_genes,
     nonmarker_block = block$new(
       blocktype = "nonmarker",
       size = nonmarker_blocksizes[i],
-      mus_NM = mus_NM,
-      sd_nonmarker = sds_NM[i],
-      rho_nonmarker = rhos_NM[i],
+      mu_nonmarker = mu_nonmarker,
+      sd_nonmarker = sds_nonmarker[i],
+      rho_nonmarker = rhos_nonmarker[i],
       n_pts = n_pts,
       fraction_pts_benefit = fraction_pts_benefit,
       gene_effect = NULL,
@@ -185,7 +185,7 @@ generate_nonmarker_blocks <- function(n_genes,
     )
 
 
-    mu_blockvector <- nonmarker_block$mus_NM_blockvector
+    mu_blockvector <- nonmarker_block$mu_nonmarker_blockvector
     sd_blockvector <- nonmarker_block$sd_nonmarker_blockvector
     block_cormat <- nonmarker_block$block_cormat_nonmarker
 

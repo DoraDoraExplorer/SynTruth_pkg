@@ -20,9 +20,9 @@
 #' rhos_B = c(0.8),
 #' rhos_NB = c(0.8),
 #' gene_effects = c("AND"),
-#' mus_NM = 0,
-#' sds_NM = c(0.4),
-#' rhos_NM = c(0.8),
+#' mu_nonmarker = 0,
+#' sds_nonmarker = c(0.4),
+#' rhos_nonmarker = c(0.8),
 #' n_pts = 1000,
 #' n_genes = 100,
 #' fraction_pts_benefit = 0.5,
@@ -57,9 +57,9 @@ generate_data <- function(params){
   nonmarker_block_list <- generate_nonmarker_blocks(
     n_genes = params$n_genes,
     marker_blocksizes = params$marker_blocksizes,
-    mus_NM = params$mus_NM,
-    sds_NM = params$sds_NM,
-    rhos_NM = params$rhos_NM,
+    mu_nonmarker = params$mu_nonmarker,
+    sds_nonmarker = params$sds_nonmarker,
+    rhos_nonmarker = params$rhos_nonmarker,
     n_pts = params$n_pts,
     fraction_pts_benefit = params$fraction_pts_benefit)
 
@@ -76,8 +76,8 @@ generate_data <- function(params){
 
   gep_surv <- generate_gep_surv(gepdata = gepdata,
                                 n_pts = params$n_pts,
-                                surv_distribution = "Weibull",
-                                shape = params$shape,
+                                surv_distribution = params$surv_distribution,
+                                surv_d_params = params$surv_d_params,
                                 scale_NB0 = params$scale_NB0,
                                 HR_B0_NB0 = params$HR_B0_NB0,
                                 HR_NB1_NB0 = params$HR_NB1_NB0,
