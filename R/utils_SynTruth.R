@@ -86,8 +86,8 @@ generate_marker_blocks <- function(marker_blocksizes,
                               fraction_pts_benefit = fraction_pts_benefit,
                               gene_effect = gene_effects[i],
                               mus_NM = NULL,
-                              sds_NM = NULL,
-                              rhos_NM = NULL
+                              sd_nonmarker = NULL,
+                              rho_nonmarker = NULL
     )
 
     # 1. get blockvectors and block cormats
@@ -171,8 +171,8 @@ generate_nonmarker_blocks <- function(n_genes,
       blocktype = "nonmarker",
       size = nonmarker_blocksizes[i],
       mus_NM = mus_NM,
-      sds_NM = sds_NM[i],
-      rhos_NM = rhos_NM[i],
+      sd_nonmarker = sds_NM[i],
+      rho_nonmarker = rhos_NM[i],
       n_pts = n_pts,
       fraction_pts_benefit = fraction_pts_benefit,
       gene_effect = NULL,
@@ -186,7 +186,7 @@ generate_nonmarker_blocks <- function(n_genes,
 
 
     mu_blockvector <- nonmarker_block$mus_NM_blockvector
-    sd_blockvector <- nonmarker_block$sds_NM_blockvector
+    sd_blockvector <- nonmarker_block$sd_nonmarker_blockvector
     block_cormat <- nonmarker_block$block_cormat_nonmarker
 
     # 2. from blockvectors, create vectors and from block cormats, create a list.
