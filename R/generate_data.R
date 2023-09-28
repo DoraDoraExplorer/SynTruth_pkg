@@ -28,7 +28,8 @@
 #' fraction_pts_benefit = 0.5,
 #' fraction_tx_1 = 0.5,
 #' fraction_censored = 0,
-#' noise = list(type = "random", mean = 0, sd = 0),
+#' noisemean = 0,
+#' noisesd = 1,
 #' surv_distribution = "Weibull",
 #' shape = 1.5,
 #' scale_NB0 = 10,
@@ -71,7 +72,9 @@ generate_data <- function(params){
     fraction_pts_benefit = params$fraction_pts_benefit,
     fraction_tx_1 = params$fraction_tx_1,
     fraction_censored = params$fraction_censored,
-    noise = params$noise)
+    noisemean = params$noisemean,
+    noisesd = params$noisesd
+    )
 
 
   gep_surv <- generate_gep_surv(gepdata = gepdata,

@@ -411,7 +411,8 @@ gepClass <- R6::R6Class("gep",
                           fraction_pts_benefit = NA,
                           fraction_tx_1 = NA,
                           fraction_censored = NA,
-                          noise = NULL),
+                          noisemean = NULL,
+                          noisesd = NULL),
                         lock_objects = FALSE,
                         private = list(check = checker$new()))
 
@@ -423,10 +424,13 @@ gepClass$set("public", "initialize", function(marker_block_list = NULL,
                                               fraction_pts_benefit = NA,
                                               fraction_tx_1 = NA,
                                               fraction_censored = NA,
-                                              noise = NULL){
+                                              noisemean = NULL,
+                                              noisesd = NULL){
 
   self$marker_block_list <- marker_block_list
   self$nonmarker_block_list <- nonmarker_block_list
+  self$noisemean <- noisemean
+  self$noisesd <- noisesd
 
   if (missing(n_genes)) {self$n_genes <- 100}
   else {self$n_genes <- private$check$check_integer_pos(n_genes)}
@@ -443,8 +447,8 @@ gepClass$set("public", "initialize", function(marker_block_list = NULL,
   if (missing(fraction_censored)) {self$fraction_censored <- 0.5}
   else {self$fraction_censored <- private$check$check_numeric_01(fraction_censored)}
 
-  if (missing(noise)) {self$noise <- "no"}
-  else {self$noise <- private$check$check_noise(noise)}
+  # if (missing(noisemean)) {self$noisemean <- "no"}
+  # else {self$noisemean <- private$check$check_noise(noise)}
 
   return(self)
 
@@ -538,8 +542,8 @@ gepClass$set("active", "gep_m_nm", function(value){
   # 3. Add names to dimensions.
   dimnames(gep_m_nm) <- list(paste("pt",seq_len(nrow(gep_m_nm)),sep="_"), paste("gene",seq_len(ncol(gep_m_nm)),sep="_"))
   # 4. Add noise
-  return(gep_m_nm + matrix(rnorm(self$n_pts*self$n_genes, mean = self$noise$mean,
-                                 sd = self$noise$sd),
+  return(gep_m_nm + matrix(rnorm(self$n_pts*self$n_genes, mean = self$noisemean,
+                                 sd = self$noisesd),
                            nrow = self$n_pts))
 })
 

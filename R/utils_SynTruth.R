@@ -221,7 +221,8 @@ generate_gepdata <- function(marker_block_list,
                              fraction_pts_benefit,
                              fraction_tx_1,
                              fraction_censored,
-                             noise){
+                             noisemean,
+                             noisesd){
 
   #browser()
   gep <- gepClass$new(marker_block_list = marker_block_list,
@@ -231,7 +232,8 @@ generate_gepdata <- function(marker_block_list,
                       fraction_pts_benefit = fraction_pts_benefit,
                       fraction_tx_1 = fraction_tx_1,
                       fraction_censored = fraction_censored,
-                      noise = noise)
+                      noisemean = noisemean,
+                      noisesd = noisesd)
 
   return(gep$gep)
 
