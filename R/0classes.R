@@ -26,18 +26,21 @@ checker <- R6::R6Class('checker', lock_objects = FALSE)
 
 checker$set("public", "check_noise", function(x,
                                               objnm = deparse(substitute(x))){
-  params <- list("type", "mean", "sd")
-  right_datatype <- c(x[[1]] == "random", is.numeric(x[[2]]), is.numeric(x[[3]]))
+  # params <- list("type", "mean", "sd")
+  # right_datatype <- c(x[[1]] == "random", is.numeric(x[[2]]), is.numeric(x[[3]]))
+  params <- list("mean", "sd")
+  right_datatype <- c(is.numeric(x[[1]]), is.numeric(x[[2]]))
   if(!is.list(x)){
     stop(do.call(sprintf(fmt = "'%s' must be a list containing '%s'",
                          append(params, objnm, after = 0))))
   } else if(!all(names(x) %in% params)){
     stop(do.call(sprintf, c(fmt = "'%s' must contain all of the following parameters:
                             '%s'", append(params, objnm, after = 0))))
-  } else if(!all(right_datatype)){
-    stop(sprintf("In the '%s' parameter, the first element of the list should be
-    'random' and the rest should be numeric" , objnm))
-  } else{
+  # } else if(!all(right_datatype)){
+  #   stop(sprintf("In the '%s' parameter, the first element of the list should be
+  #   'random' and the rest should be numeric" , objnm))
+  } 
+  else{
     return(x)
   }
 })
@@ -535,11 +538,9 @@ gepClass$set("active", "gep_m_nm", function(value){
   # 3. Add names to dimensions.
   dimnames(gep_m_nm) <- list(paste("pt",seq_len(nrow(gep_m_nm)),sep="_"), paste("gene",seq_len(ncol(gep_m_nm)),sep="_"))
   # 4. Add noise
-  if (self$noise$type == "random"){
-    return(gep_m_nm + matrix(rnorm(self$n_pts*self$n_genes, mean = self$noise$mean,
-                                   sd = self$noise$sd),
-                             nrow = self$n_pts))
-  }
+  return(gep_m_nm + matrix(rnorm(self$n_pts*self$n_genes, mean = self$noise$mean,
+                                 sd = self$noise$sd),
+                           nrow = self$n_pts))
 })
 
 
