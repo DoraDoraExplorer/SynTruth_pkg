@@ -32,8 +32,6 @@ generate_gep_surv <- function(gepdata,
     gepdata$scale <- ifelse(gepdata$group == 'B1', scale_B1,
                             ifelse(gepdata$group == 'B0', scale_B0,
                                    ifelse(gepdata$group == 'NB0', scale_NB0, scale_NB1)))
-    print(gepdata[0:5, 0:5])
-    print(gepdata$scale[0:10])
 
     gepdata$surv_time <- rweibull(n = nrow(gepdata),shape=shape, scale=as.numeric(gepdata$scale))
   }
